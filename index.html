@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Study Tracker</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Poppins", Arial, sans-serif;
+            background: #eef1f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            width: 380px;
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0px 10px 25px rgba(0,0,0,0.1);
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #111827;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .status-box {
+            margin-top: 20px;
+        }
+
+        .user-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 20px;
+            border-radius: 12px;
+            background: #f9fafb;
+            margin-bottom: 12px;
+            border: 1px solid #e5e7eb;
+            font-size: 16px;
+            transition: 0.3s ease;
+        }
+
+        .user-row:hover {
+            background: #f3f4f6;
+        }
+
+        .online {
+            color: #10b981;
+            font-weight: bold;
+            animation: glow 1.7s infinite ease-in-out;
+        }
+
+        @keyframes glow {
+            0% { text-shadow: 0 0 0px #10b981; }
+            50% { text-shadow: 0 0 8px #10b981; }
+            100% { text-shadow: 0 0 0px #10b981; }
+        }
+
+        .offline {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>📚 Study Tracker</h2>
+
+    <div id="status" class="status-box">
+        <!-- Live status appears here -->
+    </div>
+
+    <div class="footer">
+        Auto-detecting device… No login needed.
+    </div>
+</div>
+
+<script>
+    // ---------- Device ID Generator ----------
+    function getDeviceId() {
+        const data = [
+            navigator.userAgent,
+            navigator.language,
+            screen.width,
+            screen.height,
+            screen.colorDepth,
+            navigator.hardwareConcurrency,
+            navigator.platform,
+            Intl.DateTimeFormat().resolvedOptions().timeZone,
+        ].join("|");
+
+        let hash = 0;
+        for (let i = 0; i < data.length; i++) {
+            hash = (hash << 5) - hash + data.charCodeAt(i);
+            hash |= 0;
+        }
+        return "DEV_" + Math.abs(hash);
+    }
+
+    const deviceId = getDeviceId();
+    
+
+    const socket = io("http://localhost:3000");
+
+    socket.emit("deviceLogin", deviceId);
+
+    socket.on("statusUpdate", (data) => {
+        const users = data;
+        const online = Object.values(users);
+
+        document.getElementById("status").innerHTML = `
+            <div class="user-row">
+                <span>Purna</span>
+                <span class="${online.includes("purna") ? 'online' : 'offline'}">
+                    ${online.includes("purna") ? "🟢 Online" : "🔴 Offline"}
+                </span>
+            </div>
+
+            <div class="user-row">
+                <span>Nikhil</span>
+                <span class="${online.includes("nikhil") ? 'online' : 'offline'}">
+                    ${online.includes("nikhil") ? "🟢 Online" : "🔴 Offline"}
+                </span>
+            </div>
+        `;
+    });
+
+    socket.on("errorMessage", (msg) => {
+        alert(msg);
+    });
+</script>
+
+</body>
+</html>
