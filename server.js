@@ -13,7 +13,7 @@ const io = socketIO(server, { cors: { origin: "*" } });
 const deviceMap = {
   // fill these AFTER testing both devices!
   DEV_984253569: "purna",
-  DEV_1688193743: "nikhil",
+  DEV_946776546: "nikhil",
 };
 
 let onlineUsers = {};
