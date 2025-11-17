@@ -4,10 +4,23 @@ const cors = require("cors");
 const socketIO = require("socket.io");
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: ["https://study-tracker-jc4n.vercel.app"],
+  methods: ["GET", "POST"],
+  credentials: true
+}));
+
+const io = socketIO(server, {
+  cors: {
+    origin: "https://study-tracker-jc4n.vercel.app",
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
+
 
 const server = http.createServer(app);
-const io = socketIO(server, { cors: { origin: "*" } });
+
 
 // Map device IDs to usernames
 const deviceMap = {
@@ -38,4 +51,6 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(3000, () => console.log("Server running..."));
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => console.log("Server running on port " + PORT));
+
