@@ -10,6 +10,10 @@ app.use(cors({
   credentials: true
 }));
 
+app.get("/", (req, res) => {
+  res.send("Study Tracker Backend is running");
+});
+
 
 const server = http.createServer(app);
 const io = socketIO(server, {
