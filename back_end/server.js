@@ -10,6 +10,8 @@ app.use(cors({
   credentials: true
 }));
 
+
+const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
     origin: "https://study-tracker-jc4n.vercel.app",
@@ -17,10 +19,6 @@ const io = socketIO(server, {
     credentials: true
   }
 });
-
-
-const server = http.createServer(app);
-
 
 // Map device IDs to usernames
 const deviceMap = {
